@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodPack J.L. — Empaques Sostenibles</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif']
+        }
+      }
+    }
+  }
+</script>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<div class="relative overflow-hidden min-h-screen flex flex-col">
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-scrim"></div>
+
+  <div class="relative z-10 flex flex-col min-h-screen">
+
+    <div class="px-6 md:px-12 lg:px-16 pt-6 relative">
+      <nav class="liquid-glass rounded-xl px-4 py-2 flex items-center justify-between">
+        <div class="text-2xl font-semibold tracking-tight">FoodPack<span style="color:var(--green);">.</span></div>
+
+        <div class="hidden md:flex items-center gap-8 text-sm">
+          <a href="productos.html" class="transition-colors hover:text-[var(--green-pale)]">Productos</a>
+          <a href="nosotros.html" class="transition-colors hover:text-[var(--green-pale)]">Nosotros</a>
+          <a href="contactanos.html#formulario" class="transition-colors hover:text-[var(--green-pale)]">Contactanos</a>
+          <a href="blog.html" class="transition-colors hover:text-[var(--green-pale)]">Blog</a>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="mobile-menu-btn" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg shrink-0" aria-label="Abrir menú" aria-expanded="false" style="color:#fff;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <a href="contactanos.html#formulario" class="btn-primary inline-block text-sm font-medium px-4 sm:px-6 py-2 rounded-lg whitespace-nowrap" style="background:var(--green); color:var(--green-dark);">
+            Cotizar ahora
+          </a>
+        </div>
+      </nav>
+
+      <div id="mobile-menu" class="hidden md:hidden absolute left-6 right-6 top-full mt-2 liquid-glass rounded-xl p-4 flex flex-col gap-1 text-sm z-50">
+        <a href="productos.html" class="py-2 hover:text-[var(--green-pale)]">Productos</a>
+        <a href="nosotros.html" class="py-2 hover:text-[var(--green-pale)]">Nosotros</a>
+        <a href="contactanos.html#formulario" class="py-2 hover:text-[var(--green-pale)]">Contactanos</a>
+        <a href="blog.html" class="py-2 hover:text-[var(--green-pale)]">Blog</a>
+      </div>
+    </div>
+
+    <div class="px-6 md:px-12 lg:px-16 flex-1 flex flex-col justify-end pb-14 lg:pb-20">
+      <div class="lg:grid lg:grid-cols-2 lg:gap-10 lg:items-end">
+
+        <div>
+          <div id="hero-badge" class="fade-in-el inline-block liquid-glass rounded-full px-4 py-1.5 mb-6" style="transition-duration:900ms;">
+            <span class="text-xs font-semibold tracking-[0.2em]" style="color:var(--mint-soft);">EMPAQUES SOSTENIBLES</span>
+          </div>
+
+          <h1 id="hero-heading" class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal mb-5" style="letter-spacing: -0.04em;"></h1>
+
+          <p id="hero-sub" class="fade-in-el text-base md:text-lg mb-8 max-w-xl" style="transition-duration:1000ms; color:var(--sky);">
+            Fabricamos láminas de papel mineral antigraso, biodegradable, diseñadas para hamburguesas, papitas y la comida rápida que tus clientes aman.
+          </p>
+
+          <div id="hero-buttons" class="fade-in-el flex flex-wrap gap-4" style="transition-duration:1000ms;">
+            <a href="contactanos.html#formulario" class="btn-primary px-8 py-3 rounded-lg font-medium" style="background:var(--green); color:var(--green-dark);">
+              Cotizar ahora →
+            </a>
+            <a href="nosotros.html" class="liquid-glass btn-ghost-glass border border-white/20 text-white px-8 py-3 rounded-lg font-medium">
+              Conoce el proceso
+            </a>
+          </div>
+        </div>
+
+        <div class="flex items-end justify-start lg:justify-end mt-10 lg:mt-0">
+          <div id="hero-tag" class="fade-in-el liquid-glass border border-white/20 px-6 py-3 rounded-xl" style="transition-duration:1000ms;">
+            <span class="text-lg md:text-xl lg:text-2xl font-light">Antigraso. Biodegradable. Grado alimenticio.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer id="contacto" class="px-6 md:px-12 lg:px-16 pt-16 pb-8 border-t border-white/10">
+  <div class="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10 max-w-6xl mx-auto mb-12">
+
+    <div>
+      <div class="text-2xl font-semibold tracking-tight mb-3">FoodPack<span style="color:var(--green);"> J.L.</span></div>
+      <p class="text-sm text-white/70 leading-relaxed mb-4">Empaques biodegradables para un futuro sin plástico.</p>
+      <div class="liquid-glass inline-block rounded-full px-3 py-1.5">
+        <span class="text-xs font-medium tracking-wide" style="color:var(--green-pale);">CARBONO NEUTRO</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="text-xs font-semibold tracking-[0.2em] mb-4" style="color:var(--green);">PRODUCTOS</div>
+      <div class="text-sm text-white/80 leading-loose">Láminas para hamburguesas<br>Bolsas para papitas fritas y Hamburgesa<br>Bolsa para domocilios<br>Impresion Personalizada</div>
+    </div>
+
+    <div>
+      <div class="text-xs font-semibold tracking-[0.2em] mb-4" style="color:var(--green);">CONTACTO</div>
+      <div class="text-sm text-white/80 leading-loose">+57 312 3478178<br>foodpackjl@gmail.com<br>Fontibón, Bogotá</div>
+    </div>
+
+    <div>
+      <div class="text-xs font-semibold tracking-[0.2em] mb-4" style="color:var(--green);">SÍGUENOS</div>
+      <div class="flex gap-2.5">
+        <a href="https://www.facebook.com/profile.php?id=61589604445307" target="_blank" rel="noopener" aria-label="Facebook" class="liquid-glass w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style="color:var(--green);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 13.5h2.5l.5-3H14V8.5c0-1 .3-1.7 1.8-1.7H17V4.1c-.3 0-1.3-.1-2.4-.1-2.4 0-4.1 1.5-4.1 4.2V10.5H8v3h2.5V21h3.5v-7.5z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/foodpackjl/" target="_blank" rel="noopener" aria-label="Instagram" class="liquid-glass w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style="color:var(--green);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@foodpack72" target="_blank" rel="noopener" aria-label="TikTok" class="liquid-glass w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style="color:var(--green);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 3c.3 2 1.8 3.6 3.8 3.9v2.8c-1.4 0-2.7-.4-3.8-1.2v6.6c0 3.1-2.5 5.6-5.6 5.6S5.3 18.2 5.3 15.1c0-3 2.3-5.4 5.2-5.6v2.9c-1.3.2-2.3 1.3-2.3 2.7 0 1.5 1.2 2.7 2.7 2.7s2.7-1.2 2.7-2.7V3h2.9z"/></svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="max-w-6xl mx-auto pt-6 border-t border-white/10 flex flex-col md:flex-row gap-2 justify-between text-xs text-white/60">
+    <span>© 2026 FoodPack J.L. Empacando con conciencia.</span>
+    <span>Privacidad · Términos</span>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+
+</body>
+</html>
