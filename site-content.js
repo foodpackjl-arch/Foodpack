@@ -22,6 +22,9 @@ if (el.tagName === "IMG") {
 el.src = item.valor;
 } else {
 el.style.backgroundImage = 'url("' + item.valor + '")';
+  el.style.backgroundSize = "cover";
+  el.style.backgroundPosition = "center";
+  el.textContent = "";
 }
 } else if (item.tipo === "emoji" && item.valor) {
 el.textContent = item.valor;
