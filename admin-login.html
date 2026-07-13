@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+  <html lang="es">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso Administrador - FoodPack J.L.</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  </head>
+  <body class="min-h-screen flex items-center justify-center bg-[#070f09] text-white font-sans px-4">
+  <div class="w-full max-w-sm">
+  <div class="text-center mb-8">
+  <img src="logo.png" alt="FoodPack J.L." class="h-14 w-auto mx-auto mb-4" data-content-key="site_logo">
+  <h1 class="text-xl font-semibold">Panel de Administracion</h1>
+<p class="text-white/60 text-sm mt-1">Inicia sesion para gestionar el sitio</p>
+  </div>
+
+  <form id="login-form" class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+  <div>
+  <label class="block text-sm mb-1 text-white/70" for="username">Usuario</label>
+  <input id="username" type="text" autocomplete="username" required class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2 outline-none focus:border-lime-400" placeholder="AdminFoodP">
+  </div>
+  <div>
+  <label class="block text-sm mb-1 text-white/70" for="password">Contrasena</label>
+  <input id="password" type="password" autocomplete="current-password" required class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2 outline-none focus:border-lime-400" placeholder="********">
+</div>
+  <div id="login-error" class="hidden text-sm text-red-400"></div>
+  <button type="submit" id="login-button" class="w-full bg-lime-500 hover:bg-lime-400 text-[#0d2952] font-semibold rounded-lg py-2 transition">Ingresar</button>
+  </form>
+  <p class="text-center text-white/40 text-xs mt-6"><a href="index.html" class="underline">Volver al sitio</a></p>
+  </div>
+
+  <script src="supabase-client.js"></script>
+<script>
+  (async function () {
+  var sessionRes = await supabaseClient.auth.getSession();
+  if (sessionRes.data && sessionRes.data.session) {
+  window.location.href = "admin.html";
+  }
+  })();
+
+var form = document.getElementById("login-form");
+  var errorBox = document.getElementById("login-error");
+  var button = document.getElementById("login-button");
+
+  form.addEventListener("submit", async function (e) {
+  e.preventDefault();
+errorBox.classList.add("hidden");
+  button.disabled = true;
+  button.textContent = "Ingresando...";
+
+  var username = document.getElementById("username").value;
+  var password = document.getElementById("password").value;
+  var email = usernameToEmailFP(username);
+
+  var result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+
+  if (result.error) {
+  errorBox.textContent = "Usuario o contrasena incorrectos.";
+  errorBox.classList.remove("hidden");
+  button.disabled = false;
+  button.textContent = "Ingresar";
+  return;
+  }
+
+  window.location.href = "admin.html";
+  });
+  </script>
+  </body>
+</html>
+  
