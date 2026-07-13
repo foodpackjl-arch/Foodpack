@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+  <html lang="es">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administracion - FoodPack J.L.</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  </head>
+  <body class="min-h-screen bg-[#070f09] text-white font-sans">
+
+  <header class="flex items-center justify-between px-6 py-4 border-b border-white/10">
+  <div class="flex items-center gap-3">
+  <img src="logo.png" alt="FoodPack J.L." class="h-10 w-auto" data-content-key="site_logo">
+  <span class="font-semibold">Panel de Administracion</span>
+</div>
+<div class="flex items-center gap-4 text-sm">
+<span id="usuario-actual" class="text-white/60"></span>
+  <button id="cerrar-sesion" class="bg-white/10 hover:bg-white/20 rounded-lg px-3 py-1.5">Cerrar sesion</button>
+  </div>
+  </header>
+  <div id="loading" class="flex items-center justify-center h-64 text-white/60">Cargando...</div>
+
+  <div id="app" class="hidden max-w-5xl mx-auto px-6 py-8">
+
+  <nav class="flex gap-2 mb-8 border-b border-white/10 pb-2">
+  <button data-tab="usuarios" class="tab-btn bg-lime-500 text-[#0d2952] font-semibold rounded-lg px-4 py-2">Usuarios</button>
+  <button data-tab="productos" class="tab-btn bg-white/10 rounded-lg px-4 py-2">Productos</button>
+  <button data-tab="contenido" class="tab-btn bg-white/10 rounded-lg px-4 py-2">Contenido Visual</button>
+  </nav>
+  <section id="tab-usuarios" class="tab-section">
+  <h2 class="text-lg font-semibold mb-4">Gestion de usuarios</h2>
+  <div id="usuarios-lista" class="mb-8"></div>
+
+<form id="form-crear-usuario" class="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md space-y-4">
+  <h3 class="font-semibold">Crear nuevo usuario</h3>
+  <div>
+  <label class="block text-sm mb-1 text-white/70">Usuario</label>
+  <input id="nuevo-usuario-username" type="text" required class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2">
+  </div>
+  <div>
+<label class="block text-sm mb-1 text-white/70">Contrasena (minimo 8 caracteres)</label>
+  <input id="nuevo-usuario-password" type="password" required minlength="8" class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2">
+  </div>
+  <button type="submit" class="bg-lime-500 hover:bg-lime-400 text-[#0d2952] font-semibold rounded-lg px-4 py-2">Crear usuario</button>
+  </form>
+  </section>
+<section id="tab-productos" class="tab-section hidden">
+<h2 class="text-lg font-semibold mb-4">Gestion de productos</h2>
+<div id="productos-lista" class="mb-8"></div>
+
+<form id="form-crear-producto" class="bg-white/5 border border-white/10 rounded-2xl p-6 max-w-xl space-y-4">
+  <h3 class="font-semibold">Crear nuevo producto</h3>
+  <div>
+  <label class="block text-sm mb-1 text-white/70">Nombre del producto</label>
+  <input id="prod-nombre" type="text" required class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2">
+</div>
+  <div class="grid grid-cols-2 gap-3">
+  <div>
+  <label class="block text-sm mb-1 text-white/70">Categoria (etiqueta pequena)</label>
+  <input id="prod-categoria" type="text" class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2">
+  </div>
+<div>
+  <label class="block text-sm mb-1 text-white/70">Badge (ej. Mas vendido)</label>
+  <input id="prod-badge" type="text" class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2">
+  </div>
+  </div>
+  <div>
+<label class="block text-sm mb-1 text-white/70">Descripcion</label>
+  <textarea id="prod-descripcion" rows="3" class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2"></textarea>
+  </div>
+  <div>
+  <label class="block text-sm mb-1 text-white/70">Caracteristicas (separadas por coma)</label>
+  <input id="prod-caracteristicas" type="text" class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2">
+</div>
+  <div class="grid grid-cols-2 gap-3">
+  <div>
+  <label class="block text-sm mb-1 text-white/70">Medidas</label>
+  <input id="prod-medidas" type="text" class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2">
+  </div>
+  <div>
+  <label class="block text-sm mb-1 text-white/70">Precio (opcional)</label>
+  <input id="prod-precio" type="number" step="0.01" class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2">
+  </div>
+  </div>
+  <div>
+  <label class="block text-sm mb-1 text-white/70">Icono emoji (si no subes imagen)</label>
+<input id="prod-emoji" type="text" class="w-full rounded-lg bg-white/10 border border-white/10 px-3 py-2">
+  </div>
+  <div>
+  <label class="block text-sm mb-1 text-white/70">Imagen del producto (opcional)</label>
+  <input id="prod-imagen" type="file" accept="image/*" class="w-full text-sm">
+  </div>
+  <button type="submit" id="btn-guardar-producto" class="bg-lime-500 hover:bg-lime-400 text-[#0d2952] font-semibold rounded-lg px-4 py-2">Crear producto</button>
+  </form>
+  </section>
+  <section id="tab-contenido" class="tab-section hidden">
+  <h2 class="text-lg font-semibold mb-4">Contenido visual del sitio</h2>
+  <p class="text-white/50 text-sm mb-6">Cada elemento indica claramente que imagen o icono estas modificando. Los cambios se confirman antes de guardarse.</p>
+<div id="contenido-lista"></div>
+</section>
+
+  </div>
+
+  <script src="supabase-client.js"></script>
+  <script>
+var ADMIN_FN_URL = "https://vfspninncrmvsbjzygnm.supabase.co/functions/v1/admin-users";
+var currentSession = null;
+
+  function confirmar(mensaje) {
+    return window.confirm(mensaje);
+  }
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+.replace(/</g, "&lt;")
+.replace(/>/g, "&gt;")
+.replace(/"/g, "&quot;");
+    }
+function resizeImageFile(file, maxDim) {
+  return new Promise(function (resolve, reject) {
+    var img = new Image();
+var reader = new FileReader();
+reader.onload = function (e) {
+img.onload = function () {
+var w = img.width, h = img.height;
+if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
+else if (h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
+var canvas = document.createElement("canvas");
+canvas.width = w; canvas.height = h;
+canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+canvas.toBlob(function (blob) { resolve(blob); }, "image/webp", 0.85);
+};
+img.onerror = reject;
+img.src = e.target.result;
+};
+reader.onerror = reject;
+reader.readAsDataURL(file);
+  });
+}
+
+async function subirImagen(file, carpeta) {
+var blob = await resizeImageFile(file, 1200);
+var nombre = carpeta + "/" + Date.now() + "-" + Math.round(Math.random() * 10000) + ".webp";
+var uploadRes = await supabaseClient.storage.from("imagenes").upload(nombre, blob, {
+  contentType: "image/webp",
+  upsert: true
+  });
+if (uploadRes.error) throw uploadRes.error;
+var urlRes = supabaseClient.storage.from("imagenes").getPublicUrl(nombre);
+return urlRes.data.publicUrl;
+}
+
+async function llamarFuncionAdmin(action, payload) {
+var body = Object.assign({ action: action }, payload || {});
+var res = await fetch(ADMIN_FN_URL, {
+method: "POST",
+  headers: {
+"Content-Type": "application/json",
+  "Authorization": "Bearer " + currentSession.access_token
+  },
+  body: JSON.stringify(body)
+    });
+var data = await res.json();
+if (!res.ok) throw new Error(data.error || "Error desconocido");
+return data;
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+async function init() {
+var sessionRes = await supabaseClient.auth.getSession();
+currentSession = sessionRes.data.session;
+if (!currentSession) {
+window.location.href = "admin-login.html";
+return;
+}
+
+var profileRes = await supabaseClient.from("profiles").select("username, role").eq("id", currentSession.user.id).single();
+if (profileRes.error || !profileRes.data || profileRes.data.role !== "admin") {
+await supabaseClient.auth.signOut();
+window.location.href = "admin-login.html";
+return;
+}
+
+document.getElementById("usuario-actual").textContent = profileRes.data.username;
+document.getElementById("loading").classList.add("hidden");
+document.getElementById("app").classList.remove("hidden");
+
+configurarTabs();
+cargarUsuarios();
+cargarProductos();
+cargarContenidoVisual();
+
+document.getElementById("cerrar-sesion").addEventListener("click", async function () {
+if (!confirmar("Deseas cerrar la sesion?")) return;
+await supabaseClient.auth.signOut();
+window.location.href = "admin-login.html";
+});
+}
+
+function configurarTabs() {
+  var botones = document.querySelectorAll(".tab-btn");
+botones.forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    botones.forEach(function (b) {
+      b.classList.remove("bg-lime-500", "text-[#0d2952]", "font-semibold");
+b.classList.add("bg-white/10");
+    });
+btn.classList.remove("bg-white/10");
+btn.classList.add("bg-lime-500", "text-[#0d2952]", "font-semibold");
+document.querySelectorAll(".tab-section").forEach(function (s) { s.classList.add("hidden"); });
+document.getElementById("tab-" + btn.dataset.tab).classList.remove("hidden");
+  });
+});
+}
+
+async function cargarUsuarios() {
+var lista = document.getElementById("usuarios-lista");
+lista.innerHTML = '<p class="text-white/50">Cargando...</p>';
+try {
+var data = await llamarFuncionAdmin("list_users");
+lista.innerHTML = "";
+data.users.forEach(function (u) {
+  var row = document.createElement("div");
+row.className = "flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-4 py-3 mb-2";
+row.innerHTML =
+  '<div><p class="font-semibold">' + escapeHtml(u.username) + '</p>' +
+  '<p class="text-xs text-white/50">Rol: ' + escapeHtml(u.role) + '</p></div>' +
+  '<div class="flex gap-2">' +
+  '<button class="btn-cambiar-password bg-white/10 hover:bg-white/20 rounded-lg px-3 py-1.5 text-sm">Cambiar contrasena</button>' +
+  '<button class="btn-eliminar-usuario bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg px-3 py-1.5 text-sm">Eliminar</button>' +
+  '</div>';
+row.querySelector(".btn-cambiar-password").addEventListener("click", function () {
+  cambiarPasswordUsuario(u);
+});
+row.querySelector(".btn-eliminar-usuario").addEventListener("click", function () {
+  eliminarUsuario(u);
+});
+lista.appendChild(row);
+});
+} catch (e) {
+lista.innerHTML = '<p class="text-red-400">Error: ' + escapeHtml(e.message) + '</p>';
+}
+}
+
+async function cambiarPasswordUsuario(u) {
+var nueva = window.prompt('Nueva contrasena para "' + u.username + '" (minimo 8 caracteres):');
+if (!nueva) return;
+if (nueva.length < 8) { alert("La contrasena debe tener minimo 8 caracteres."); return; }
+if (!confirmar('Confirmas cambiar la contrasena de "' + u.username + '"?')) return;
+try {
+await llamarFuncionAdmin("update_password", { userId: u.id, password: nueva });
+alert("Contrasena actualizada correctamente.");
+} catch (e) {
+alert("Error: " + e.message);
+}
+}
+
+async function eliminarUsuario(u) {
+if (!confirmar('Seguro que deseas eliminar al usuario "' + u.username + '"? Esta accion no se puede deshacer.')) return;
+try {
+await llamarFuncionAdmin("delete_user", { userId: u.id });
+cargarUsuarios();
+} catch (e) {
+alert("Error: " + e.message);
+}
+}
+
+document.getElementById("form-crear-usuario").addEventListener("submit", async function (e) {
+  e.preventDefault();
+var username = document.getElementById("nuevo-usuario-username").value.trim();
+var password = document.getElementById("nuevo-usuario-password").value;
+if (!username || !password) return;
+if (password.length < 8) { alert("La contrasena debe tener minimo 8 caracteres."); return; }
+if (!confirmar('Crear el usuario "' + username + '" con rol administrador?')) return;
+try {
+await llamarFuncionAdmin("create_user", { username: username, password: password, role: "admin" });
+document.getElementById("form-crear-usuario").reset();
+cargarUsuarios();
+} catch (e) {
+alert("Error: " + e.message);
+}
+});
+
+async function cargarProductos() {
+var lista = document.getElementById("productos-lista");
+lista.innerHTML = '<p class="text-white/50">Cargando...</p>';
+var res = await supabaseClient.from("productos").select("*").order("orden", { ascending: true });
+if (res.error) {
+lista.innerHTML = '<p class="text-red-400">Error: ' + escapeHtml(res.error.message) + '</p>';
+return;
+}
+lista.innerHTML = "";
+if (!res.data.length) {
+lista.innerHTML = '<p class="text-white/50">Aun no hay productos creados.</p>';
+}
+res.data.forEach(function (p) {
+  var row = document.createElement("div");
+row.className = "flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-4 py-3 mb-2";
+var miniatura = p.imagen_url
+? '<img src="' + p.imagen_url + '" class="w-12 h-12 object-cover rounded-lg">'
+: '<div class="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center text-2xl">' + (p.emoji_icono || "?") + '</div>';
+row.innerHTML =
+  '<div class="flex items-center gap-3">' + miniatura +
+  '<div><p class="font-semibold">' + escapeHtml(p.nombre || "") + (p.activo ? "" : ' <span class="text-xs text-white/40">(oculto)</span>') + '</p>' +
+  '<p class="text-xs text-white/50">' + escapeHtml(p.categoria || "") + '</p></div></div>' +
+  '<div class="flex gap-2">' +
+  '<button class="btn-act bg-white/10 hover:bg-white/20 rounded-lg px-3 py-1.5 text-sm">' + (p.activo ? "Ocultar" : "Mostrar") + '</button>' +
+  '<button class="btn-del bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg px-3 py-1.5 text-sm">Eliminar</button>' +
+  '</div>';
+row.querySelector(".btn-act").addEventListener("click", function () { alternarProducto(p); });
+row.querySelector(".btn-del").addEventListener("click", function () { eliminarProducto(p); });
+lista.appendChild(row);
+});
+}
+
+async function alternarProducto(p) {
+var nuevoEstado = !p.activo;
+if (!confirmar((nuevoEstado ? "Mostrar" : "Ocultar") + ' el producto "' + p.nombre + '" en el sitio?')) return;
+await supabaseClient.from("productos").update({ activo: nuevoEstado }).eq("id", p.id);
+cargarProductos();
+}
+
+async function eliminarProducto(p) {
+if (!confirmar('Eliminar definitivamente el producto "' + p.nombre + '"? Esta accion no se puede deshacer.')) return;
+await supabaseClient.from("productos").delete().eq("id", p.id);
+cargarProductos();
+}
+
+document.getElementById("form-crear-producto").addEventListener("submit", async function (e) {
+  e.preventDefault();
+var boton = document.getElementById("btn-guardar-producto");
+var nombre = document.getElementById("prod-nombre").value.trim();
+var categoria = document.getElementById("prod-categoria").value.trim();
+var badge = document.getElementById("prod-badge").value.trim();
+var emoji = document.getElementById("prod-emoji").value.trim();
+var descripcion = document.getElementById("prod-descripcion").value.trim();
+var precioVal = document.getElementById("prod-precio").value.trim();
+var medidas = document.getElementById("prod-medidas").value.trim();
+var caracteristicasRaw = document.getElementById("prod-caracteristicas").value.trim();
+var archivo = document.getElementById("prod-imagen").files[0];
+
+if (!nombre) { alert("El nombre del producto es obligatorio."); return; }
+if (!confirmar('Crear el nuevo producto "' + nombre + '"?')) return;
+
+boton.disabled = true;
+boton.textContent = "Guardando...";
+
+try {
+var imagenUrl = null;
+if (archivo) {
+imagenUrl = await subirImagen(archivo, "productos");
+}
+var caracteristicas = caracteristicasRaw ? caracteristicasRaw.split(",").map(function (s) { return s.trim(); }).filter(Boolean) : [];
+
+var countRes = await supabaseClient.from("productos").select("id", { count: "exact", head: true });
+var orden = (countRes.count || 0) + 1;
+
+var insertRes = await supabaseClient.from("productos").insert({
+  nombre: nombre,
+  categoria: categoria || null,
+  badge: badge || null,
+  emoji_icono: emoji || null,
+  descripcion: descripcion || null,
+  caracteristicas: caracteristicas,
+  imagen_url: imagenUrl,
+  medidas: medidas || null,
+  precio: precioVal ? Number(precioVal) : null,
+  orden: orden,
+  activo: true
+  });
+
+if (insertRes.error) throw insertRes.error;
+
+document.getElementById("form-crear-producto").reset();
+cargarProductos();
+} catch (err) {
+  alert("Error al guardar el producto: " + err.message);
+} finally {
+  boton.disabled = false;
+boton.textContent = "Crear producto";
+}
+});
+
+async function cargarContenidoVisual() {
+var contenedor = document.getElementById("contenido-lista");
+contenedor.innerHTML = '<p class="text-white/50">Cargando...</p>';
+var res = await supabaseClient.from("contenido_visual").select("*").order("pagina", { ascending: true });
+if (res.error) {
+contenedor.innerHTML = '<p class="text-red-400">Error: ' + escapeHtml(res.error.message) + '</p>';
+return;
+}
+contenedor.innerHTML = "";
+var grupos = {};
+res.data.forEach(function (item) {
+  if (!grupos[item.pagina]) grupos[item.pagina] = [];
+grupos[item.pagina].push(item);
+});
+var nombresPagina = { global: "Global (todas las paginas)", home: "Pagina Principal", productos: "Pagina de Productos", nosotros: "Pagina Nosotros" };
+Object.keys(grupos).forEach(function (pagina) {
+  var bloque = document.createElement("div");
+bloque.className = "mb-8";
+bloque.innerHTML = '<h3 class="text-lg font-semibold mb-3">' + (nombresPagina[pagina] || pagina) + '</h3>';
+var listaBloque = document.createElement("div");
+listaBloque.className = "space-y-3";
+grupos[pagina].forEach(function (item) {
+  listaBloque.appendChild(crearFilaContenido(item));
+});
+bloque.appendChild(listaBloque);
+contenedor.appendChild(bloque);
+});
+}
+
+function crearFilaContenido(item) {
+  var row = document.createElement("div");
+row.className = "flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-4 py-3 gap-4";
+
+var previewHtml = "";
+if (item.tipo === "imagen") {
+previewHtml = item.valor
+  ? '<img src="' + item.valor + '" class="w-14 h-14 object-cover rounded-lg">'
+  : '<div class="w-14 h-14 rounded-lg bg-white/10 flex items-center justify-center text-xs text-white/40">sin imagen</div>';
+} else if (item.tipo === "emoji") {
+previewHtml = '<div class="w-14 h-14 rounded-lg bg-white/10 flex items-center justify-center text-2xl">' + (item.valor || "") + '</div>';
+} else if (item.tipo === "visible") {
+previewHtml = '<div class="w-14 h-14 rounded-lg bg-white/10 flex items-center justify-center text-xs">' + (item.valor === "false" ? "Oculto" : "Visible") + '</div>';
+}
+
+var controlHtml = "";
+if (item.tipo === "imagen") {
+controlHtml = '<input type="file" accept="image/*" class="text-xs input-imagen">';
+} else if (item.tipo === "emoji") {
+controlHtml = '<input type="text" value="' + escapeHtml(item.valor || "") + '" class="input-emoji w-16 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-center">';
+} else if (item.tipo === "visible") {
+controlHtml = '<label class="flex items-center gap-2 text-sm"><input type="checkbox" class="input-visible" ' + (item.valor !== "false" ? "checked" : "") + '> Mostrar</label>';
+}
+
+row.innerHTML =
+  '<div class="flex items-center gap-3 flex-1">' + previewHtml +
+  '<p class="text-sm">' + escapeHtml(item.etiqueta) + '</p></div>' +
+  '<div class="flex items-center gap-2">' + controlHtml +
+  '<button class="btn-guardar-item bg-lime-500 hover:bg-lime-400 text-[#0d2952] font-semibold rounded-lg px-3 py-1.5 text-sm">Guardar</button>' +
+  '</div>';
+
+row.querySelector(".btn-guardar-item").addEventListener("click", function () {
+  guardarItemContenido(item, row);
+});
+
+return row;
+}
+
+async function guardarItemContenido(item, row) {
+var nuevoValor = item.valor;
+try {
+if (item.tipo === "imagen") {
+var archivo = row.querySelector(".input-imagen").files[0];
+if (!archivo) { alert("Selecciona una imagen primero."); return; }
+if (!confirmar('Reemplazar la imagen de "' + item.etiqueta + '"?')) return;
+nuevoValor = await subirImagen(archivo, "contenido");
+} else if (item.tipo === "emoji") {
+nuevoValor = row.querySelector(".input-emoji").value.trim();
+if (!confirmar('Guardar el nuevo icono de "' + item.etiqueta + '"?')) return;
+} else if (item.tipo === "visible") {
+var marcado = row.querySelector(".input-visible").checked;
+nuevoValor = marcado ? "true" : "false";
+if (!confirmar((marcado ? "Mostrar" : "Ocultar") + ' "' + item.etiqueta + '" en el sitio?')) return;
+}
+
+var updateRes = await supabaseClient.from("contenido_visual").update({ valor: nuevoValor, updated_at: new Date().toISOString() }).eq("id", item.id);
+if (updateRes.error) throw updateRes.error;
+item.valor = nuevoValor;
+alert("Guardado correctamente.");
+cargarContenidoVisual();
+} catch (err) {
+  alert("Error al guardar: " + err.message);
+}
+  }
+</script>
+  </body>
+  </html>
+  
