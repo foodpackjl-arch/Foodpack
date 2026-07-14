@@ -9,7 +9,13 @@
 </head>
 <body class="bg-gray-100 min-h-screen">
   <header class="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
-    <h1 class="text-lg font-semibold">Panel de Administracion</h1>
+    <div class="flex items-center gap-6">
+        <h1 class="text-lg font-semibold">Panel de Administracion</h1>
+        <nav class="flex gap-4 text-sm text-gray-300">
+          <a href="dashboard.html" class="text-white font-medium">Dashboard</a>
+          <a href="users.html" class="hover:text-white">Usuarios</a>
+        </nav>
+      </div>
     <div class="flex items-center gap-4">
       <span id="user-email" class="text-sm text-gray-300"></span>
       <button id="logout-btn" class="bg-gray-700 hover:bg-gray-600 text-sm px-3 py-1.5 rounded-lg">Cerrar sesion</button>
