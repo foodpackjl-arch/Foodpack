@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <header class="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
+    <h1 class="text-lg font-semibold">Panel de Administracion</h1>
+    <div class="flex items-center gap-4">
+      <span id="user-email" class="text-sm text-gray-300"></span>
+      <button id="logout-btn" class="bg-gray-700 hover:bg-gray-600 text-sm px-3 py-1.5 rounded-lg">Cerrar sesion</button>
+    </div>
+  </header>
+
+  <main class="p-8">
+    <div class="bg-white rounded-2xl shadow p-6 max-w-2xl mx-auto text-center">
+      <p class="text-gray-600">Bienvenido al panel. Esta seccion se desarrollara en la Fase 3.</p>
+    </div>
+  </main>
+
+  <script>
+    const supabaseUrl = 'https://vfspninncrmvsbjzygnm.supabase.co';
+    const supabaseKey = 'sb_publishable_xfOz5c2O9YFezzUSZKbI3Q_nWT6EnLN';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function init() {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        window.location.href = 'login.html';
+        return;
+      }
+      document.getElementById('user-email').textContent = data.session.user.email;
+    }
+    init();
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>
