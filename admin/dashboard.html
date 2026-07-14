@@ -31,10 +31,10 @@
   <script>
     const supabaseUrl = 'https://vfspninncrmvsbjzygnm.supabase.co';
     const supabaseKey = 'sb_publishable_xfOz5c2O9YFezzUSZKbI3Q_nWT6EnLN';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     async function init() {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await supabaseClient.auth.getSession();
       if (!data.session) {
         window.location.href = 'login.html';
         return;
@@ -44,7 +44,7 @@
     init();
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
-      await supabase.auth.signOut();
+      await supabaseClient.auth.signOut();
       window.location.href = 'login.html';
     });
   </script>
