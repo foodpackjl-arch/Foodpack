@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin - Usuarios</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <header class="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-6">
+      <h1 class="text-lg font-semibold">Panel de Administracion</h1>
+      <nav class="flex gap-4 text-sm text-gray-300">
+        <a href="dashboard.html" class="hover:text-white">Dashboard</a>
+        <a href="users.html" class="text-white font-medium">Usuarios</a>
+      </nav>
+    </div>
+    <div class="flex items-center gap-4">
+      <span id="user-email" class="text-sm text-gray-300"></span>
+      <button id="logout-btn" class="bg-gray-700 hover:bg-gray-600 text-sm px-3 py-1.5 rounded-lg">Cerrar sesion</button>
+    </div>
+  </header>
+
+  <main class="p-8 max-w-4xl mx-auto space-y-8">
+    <section class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-lg font-semibold mb-4 text-gray-800">Agregar nuevo usuario</h2>
+      <form id="create-form" class="flex flex-col sm:flex-row gap-3">
+        <input type="email" id="new-email" required placeholder="correo@ejemplo.com" class="flex-1 border rounded-lg px-3 py-2 text-sm">
+        <input type="password" id="new-password" required placeholder="Contrasena" class="flex-1 border rounded-lg px-3 py-2 text-sm">
+        <button type="submit" id="create-btn" class="bg-gray-900 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-700">Crear usuario</button>
+      </form>
+      <p id="create-msg" class="text-xs mt-2 hidden"></p>
+    </section>
+
+    <section class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-lg font-semibold mb-4 text-gray-800">Usuarios del panel</h2>
+      <p id="list-msg" class="text-xs text-gray-500 mb-2 hidden"></p>
+      <table class="w-full text-sm text-left">
+        <thead>
+          <tr class="border-b text-gray-500">
+            <th class="py-2 pr-4">Email</th>
+            <th class="py-2 pr-4">Creado</th>
+            <th class="py-2 pr-4">Ultimo acceso</th>
+            <th class="py-2 pr-4"></th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const supabaseUrl = 'https://vfspninncrmvsbjzygnm.supabase.co';
+    const supabaseKey = 'sb_publishable_xfOz5c2O9YFezzUSZKbI3Q_nWT6EnLN';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function init() {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        window.location.href = 'login.html';
+        return;
+      }
+      document.getElementById('user-email').textContent = data.session.user.email;
+      loadUsers();
+    }
+    init();
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = 'login.html';
+    });
+
+    function formatDate(iso) {
+      if (!iso) return '-';
+      return new Date(iso).toLocaleString('es-CO');
+    }
+
+    async function loadUsers() {
+      const listMsg = document.getElementById('list-msg');
+      const tbody = document.getElementById('users-tbody');
+      listMsg.textContent = 'Cargando...';
+      listMsg.classList.remove('hidden');
+
+      const { data, error } = await supabase.functions.invoke('admin-list-users');
+
+      if (error) {
+        listMsg.textContent = 'Error al cargar usuarios.';
+        return;
+      }
+
+      listMsg.classList.add('hidden');
+      tbody.innerHTML = '';
+
+      data.users.forEach((u) => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b';
+
+        const tdEmail = document.createElement('td');
+        tdEmail.className = 'py-2 pr-4';
+        tdEmail.textContent = u.email;
+
+        const tdCreated = document.createElement('td');
+        tdCreated.className = 'py-2 pr-4';
+        tdCreated.textContent = formatDate(u.created_at);
+
+        const tdLastSignIn = document.createElement('td');
+        tdLastSignIn.className = 'py-2 pr-4';
+        tdLastSignIn.textContent = formatDate(u.last_sign_in_at);
+
+        const tdAction = document.createElement('td');
+        tdAction.className = 'py-2 pr-4 text-right';
+        const btn = document.createElement('button');
+        btn.textContent = 'Cambiar contrasena';
+        btn.className = 'text-xs text-blue-600 hover:underline';
+        btn.addEventListener('click', () => changePassword(u.id, u.email));
+        tdAction.appendChild(btn);
+
+        tr.appendChild(tdEmail);
+        tr.appendChild(tdCreated);
+        tr.appendChild(tdLastSignIn);
+        tr.appendChild(tdAction);
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function changePassword(userId, email) {
+      const newPassword = prompt('Nueva contrasena para ' + email + ':');
+      if (!newPassword) return;
+      if (newPassword.length < 6) {
+        alert('La contrasena debe tener al menos 6 caracteres.');
+        return;
+      }
+
+      const { error } = await supabase.functions.invoke('admin-update-password', {
+        body: { userId, newPassword },
+      });
+
+      if (error) {
+        alert('No se pudo cambiar la contrasena.');
+      } else {
+        alert('Contrasena actualizada correctamente.');
+      }
+    }
+
+    document.getElementById('create-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const createMsg = document.getElementById('create-msg');
+      const createBtn = document.getElementById('create-btn');
+      const email = document.getElementById('new-email').value;
+      const password = document.getElementById('new-password').value;
+
+      createBtn.disabled = true;
+      createBtn.textContent = 'Creando...';
+      createMsg.classList.add('hidden');
+
+      const { error } = await supabase.functions.invoke('admin-create-user', {
+        body: { email, password },
+      });
+
+      createBtn.disabled = false;
+      createBtn.textContent = 'Crear usuario';
+
+      if (error) {
+        createMsg.textContent = 'No se pudo crear el usuario.';
+        createMsg.className = 'text-xs mt-2 text-red-600';
+      } else {
+        createMsg.textContent = 'Usuario creado correctamente.';
+        createMsg.className = 'text-xs mt-2 text-green-600';
+        document.getElementById('create-form').reset();
+        loadUsers();
+      }
+    });
+  </script>
+</body>
+</html>
