@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -93,30 +94,12 @@
 <!-- ============ CONTENIDO (fondo claro) ============ -->
 <div style="background:var(--offwhite);">
 
-  <!-- Artículo destacado -->
-  <section class="px-6 md:px-12 lg:px-16 pt-16 pb-4 md:pt-20">
-    <div data-category="sostenibilidad" class="article-card rounded-2xl overflow-hidden max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2">
-      <div class="story-graphic relative h-64 md:h-auto flex items-center justify-center">
-        <span class="article-badge absolute top-5 left-5 rounded-full px-3 py-1 text-xs font-semibold" style="background:var(--green); color:var(--green-dark);">★ ARTÍCULO DESTACADO</span>
-        <span class="text-7xl">🍔</span>
-      </div>
-      <div class="p-8 md:p-10 flex flex-col justify-center">
-        <div class="mb-3">
-          <span class="article-badge inline-block rounded-full px-3 py-1 text-xs font-semibold tracking-wide" style="background:rgba(151,196,89,0.15); color:var(--green-mid);">SOSTENIBILIDAD</span>
-        </div>
-        <h2 class="text-2xl md:text-3xl font-semibold mb-4" style="color:var(--navy); letter-spacing:-0.01em;">Por qué el papel biodegradable es el futuro del empaque para comida rápida</h2>
-        <p class="text-sm md:text-base leading-relaxed mb-6" style="color:var(--ink-muted);">El plástico de un solo uso está siendo prohibido en más de 60 países. En Colombia, la tendencia ya llegó y los negocios de comida rápida que no se adapten van a quedar atrás.</p>
-        <div class="flex flex-wrap gap-4 text-xs mb-6" style="color:var(--ink-muted);">
-          <span>🗓 Mayo 2025</span>
-          <span>⏱ 5 min de lectura</span>
-          <span>👁 1.240 vistas</span>
-        </div>
-        <a href="#" class="inline-block w-fit px-6 py-3 rounded-full font-medium text-sm text-white" style="background:var(--navy);">Leer artículo completo →</a>
-      </div>
-    </div>
-  </section>
+  <!-- Artículo destacado (dinámico) -->
+<section class="px-6 md:px-12 lg:px-16 pt-16 pb-4 md:pt-20">
+<div id="featured-article" class="max-w-6xl mx-auto"></div>
+</section>
 
-  <!-- Artículos recientes -->
+<!-- Artículos recientes -->
   <section class="px-6 md:px-12 lg:px-16 py-16 md:py-20">
     <div class="max-w-6xl mx-auto">
       <div class="flex items-center justify-between mb-8">
@@ -124,101 +107,10 @@
         <button id="ver-todos" class="text-sm font-medium" style="color:var(--green-mid);">Ver todos →</button>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div id="articles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+</div>
 
-        <article data-category="sostenibilidad" class="article-card rounded-2xl overflow-hidden">
-          <div class="story-graphic relative h-40 flex items-center justify-center">
-            <span class="article-badge absolute top-4 left-4 rounded-full px-3 py-1 text-[10px] font-semibold tracking-wide">SOSTENIBILIDAD</span>
-            <span class="text-5xl">🌱</span>
-          </div>
-          <div class="p-6">
-            <h3 class="text-base font-semibold mb-2" style="color:var(--navy);">¿Qué significa que un papel sea realmente biodegradable?</h3>
-            <p class="text-sm leading-relaxed mb-4" style="color:var(--ink-muted);">No todo lo que dice «eco» en la etiqueta lo es de verdad. Te enseñamos a leer las certificaciones.</p>
-            <div class="flex items-center justify-between text-xs" style="color:var(--ink-muted);">
-              <span>Abril 2025 · 4 min</span>
-              <a href="#" class="font-medium" style="color:var(--green-mid);">Leer →</a>
-            </div>
-          </div>
-        </article>
-
-        <article data-category="consejos" class="article-card rounded-2xl overflow-hidden">
-          <div class="product-hero-green relative h-40 flex items-center justify-center">
-            <span class="article-badge absolute top-4 left-4 rounded-full px-3 py-1 text-[10px] font-semibold tracking-wide">CONSEJOS</span>
-            <span class="text-5xl">🍟</span>
-          </div>
-          <div class="p-6">
-            <h3 class="text-base font-semibold mb-2" style="color:var(--navy);">Cómo el empaque correcto puede aumentar tus ventas un 30%</h3>
-            <p class="text-sm leading-relaxed mb-4" style="color:var(--ink-muted);">La presentación de tus productos impacta directamente en la percepción de tu marca.</p>
-            <div class="flex items-center justify-between text-xs" style="color:var(--ink-muted);">
-              <span>Marzo 2025 · 6 min</span>
-              <a href="#" class="font-medium" style="color:var(--green-mid);">Leer →</a>
-            </div>
-          </div>
-        </article>
-
-        <article data-category="empaques" class="article-card rounded-2xl overflow-hidden">
-          <div class="blog-grad-light relative h-40 flex items-center justify-center">
-            <span class="article-badge absolute top-4 left-4 rounded-full px-3 py-1 text-[10px] font-semibold tracking-wide">EMPAQUES</span>
-            <span class="text-5xl">🏷️</span>
-          </div>
-          <div class="p-6">
-            <h3 class="text-base font-semibold mb-2" style="color:var(--navy);">5 razones para personalizar tus láminas con el logo de tu negocio</h3>
-            <p class="text-sm leading-relaxed mb-4" style="color:var(--ink-muted);">El branding no es solo para grandes empresas. Un empaque con tu logo convierte cada pedido en publicidad.</p>
-            <div class="flex items-center justify-between text-xs" style="color:var(--ink-muted);">
-              <span>Febrero 2025 · 3 min</span>
-              <a href="#" class="font-medium" style="color:var(--green-mid);">Leer →</a>
-            </div>
-          </div>
-        </article>
-
-        <article data-category="tendencias" class="article-card rounded-2xl overflow-hidden">
-          <div class="story-graphic relative h-40 flex items-center justify-center">
-            <span class="article-badge absolute top-4 left-4 rounded-full px-3 py-1 text-[10px] font-semibold tracking-wide">TENDENCIAS</span>
-            <span class="text-5xl">📊</span>
-          </div>
-          <div class="p-6">
-            <h3 class="text-base font-semibold mb-2" style="color:var(--navy);">Regulación de plásticos en Colombia: qué le aplica a tu negocio</h3>
-            <p class="text-sm leading-relaxed mb-4" style="color:var(--ink-muted);">La Ley 2232 de 2022 entró en vigencia. Te explicamos qué productos están prohibidos y cómo adaptarte.</p>
-            <div class="flex items-center justify-between text-xs" style="color:var(--ink-muted);">
-              <span>Enero 2025 · 7 min</span>
-              <a href="#" class="font-medium" style="color:var(--green-mid);">Leer →</a>
-            </div>
-          </div>
-        </article>
-
-        <article data-category="comida-rapida" class="article-card rounded-2xl overflow-hidden">
-          <div class="product-hero-green relative h-40 flex items-center justify-center">
-            <span class="article-badge absolute top-4 left-4 rounded-full px-3 py-1 text-[10px] font-semibold tracking-wide">COMIDA RÁPIDA</span>
-            <span class="text-5xl">🍔</span>
-          </div>
-          <div class="p-6">
-            <h3 class="text-base font-semibold mb-2" style="color:var(--navy);">El papel antigraso ideal para hamburguesas: cómo elegirlo</h3>
-            <p class="text-sm leading-relaxed mb-4" style="color:var(--ink-muted);">Gramaje, recubrimiento, resistencia al calor... hay varios factores que determinan si una lámina sirve.</p>
-            <div class="flex items-center justify-between text-xs" style="color:var(--ink-muted);">
-              <span>Diciembre 2024 · 5 min</span>
-              <a href="#" class="font-medium" style="color:var(--green-mid);">Leer →</a>
-            </div>
-          </div>
-        </article>
-
-        <article data-category="foodpack" class="article-card rounded-2xl overflow-hidden">
-          <div class="story-graphic relative h-40 flex items-center justify-center">
-            <span class="article-badge absolute top-4 left-4 rounded-full px-3 py-1 text-[10px] font-semibold tracking-wide">FOODPACK</span>
-            <span class="text-5xl">🏆</span>
-          </div>
-          <div class="p-6">
-            <h3 class="text-base font-semibold mb-2" style="color:var(--navy);">Cumplimos 15 años: lo que aprendimos fabricando empaques en Colombia</h3>
-            <p class="text-sm leading-relaxed mb-4" style="color:var(--ink-muted);">15 años de trabajo, más de 500 clientes y millones de láminas entregadas. Juan L. comparte los aprendizajes.</p>
-            <div class="flex items-center justify-between text-xs" style="color:var(--ink-muted);">
-              <span>Noviembre 2024 · 8 min</span>
-              <a href="#" class="font-medium" style="color:var(--green-mid);">Leer →</a>
-            </div>
-          </div>
-        </article>
-
-      </div>
-
-      <p id="no-results" class="hidden text-center text-sm py-16" style="color:var(--ink-muted);">No hay artículos en esta categoría todavía.</p>
+<p id="no-results" class="hidden text-center text-sm py-16" style="color:var(--ink-muted);">No hay artículos en esta categoría todavía.</p>
     </div>
   </section>
 
@@ -305,12 +197,12 @@
 <script>
   // Filtro de categorías (100% client-side, sin backend)
   var pills = document.querySelectorAll('.filter-pill');
-  var cards = document.querySelectorAll('[data-category]');
-  var noResults = document.getElementById('no-results');
+var noResults = document.getElementById('no-results');
 
-  function applyFilter(filter) {
-    var visibleCount = 0;
-    cards.forEach(function (card) {
+function applyFilter(filter) {
+var cards = document.querySelectorAll('[data-category]');
+var visibleCount = 0;
+cards.forEach(function (card) {
       var show = (filter === 'todos' || card.dataset.category === filter);
       card.style.display = show ? '' : 'none';
       if (show) visibleCount++;
@@ -331,6 +223,11 @@
     document.querySelector('.filter-pill[data-filter="todos"]').classList.add('active');
     applyFilter('todos');
   });
+
+  window.__reinitBlogFilter = function () {
+    var activePill = document.querySelector('.filter-pill.active');
+    applyFilter(activePill ? activePill.dataset.filter : 'todos');
+  };
 
   // Newsletter: manda un correo automático a foodpackjl@gmail.com via Web3Forms
   // (misma Access Key que el formulario de Contactanos — una key puede usarse en
@@ -389,5 +286,92 @@
   });
 </script>
 
+<script>
+(function() {
+  var sb = window.supabase.createClient("https://vfspninncrmvsbjzygnm.supabase.co", "sb_publishable_xfOz5c2O9YFezzUSZKbI3Q_nWT6EnLN");
+  var BUCKET = "imagenes";
+  var CATEGORY_LABELS = { sostenibilidad: "SOSTENIBILIDAD", consejos: "CONSEJOS", empaques: "EMPAQUES", tendencias: "TENDENCIAS", "comida-rapida": "COMIDA RÁPIDA", foodpack: "FOODPACK" };
+  var MONTHS = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  var MEDIA_CLASSES = ["story-graphic", "product-hero-green", "blog-grad-light"];
+
+  function publicUrl(path) {
+    if (!path) return null;
+    var r = sb.storage.from(BUCKET).getPublicUrl(path);
+    return r.data.publicUrl;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function formatFecha(fechaStr) {
+    if (!fechaStr) return "";
+    var parts = fechaStr.split("-");
+    var year = parts[0], month = parseInt(parts[1], 10) - 1;
+    return (MONTHS[month] || "") + " " + year;
+  }
+
+  function mediaHtml(post, big) {
+    if (post.imagen_url) {
+      return '<img src="' + publicUrl(post.imagen_url) + '" alt="' + escapeHtml(post.titulo) + '" class="w-full h-full object-cover">';
+    }
+    return '<span class="' + (big ? "text-7xl" : "text-5xl") + '">' + (post.emoji_icono || "📰") + "</span>";
+  }
+
+  function renderFeatured(post) {
+    var label = CATEGORY_LABELS[post.categoria] || (post.categoria || "").toUpperCase();
+    return '<div data-category="' + escapeHtml(post.categoria) + '" class="article-card rounded-2xl overflow-hidden max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2">'
+      + '<div class="story-graphic relative h-64 md:h-auto flex items-center justify-center overflow-hidden">'
+      + '<span class="article-badge absolute top-5 left-5 rounded-full px-3 py-1 text-xs font-semibold" style="background:var(--green); color:var(--green-dark);">★ ARTÍCULO DESTACADO</span>'
+      + mediaHtml(post, true)
+      + "</div>"
+      + '<div class="p-8 md:p-10 flex flex-col justify-center">'
+      + '<div class="mb-3"><span class="article-badge inline-block rounded-full px-3 py-1 text-xs font-semibold tracking-wide" style="background:rgba(151,196,89,0.15); color:var(--green-mid);">' + escapeHtml(label) + "</span></div>"
+      + '<h2 class="text-2xl md:text-3xl font-semibold mb-4" style="color:var(--navy); letter-spacing:-0.01em;">' + escapeHtml(post.titulo) + "</h2>"
+      + '<p class="text-sm md:text-base leading-relaxed mb-6" style="color:var(--ink-muted);">' + escapeHtml(post.resumen) + "</p>"
+      + '<div class="flex flex-wrap gap-4 text-xs mb-6" style="color:var(--ink-muted);"><span>🗓 ' + formatFecha(post.fecha_publicacion) + "</span><span>⏱ " + (post.tiempo_lectura_min || 3) + " min de lectura</span></div>"
+      + '<a href="#" class="inline-block w-fit px-6 py-3 rounded-full font-medium text-sm text-white" style="background:var(--navy);">Leer artículo completo →</a>'
+      + "</div></div>";
+  }
+
+  function renderCard(post, index) {
+    var label = CATEGORY_LABELS[post.categoria] || (post.categoria || "").toUpperCase();
+    var mediaClass = MEDIA_CLASSES[index % MEDIA_CLASSES.length];
+    return '<article data-category="' + escapeHtml(post.categoria) + '" class="article-card rounded-2xl overflow-hidden">'
+      + '<div class="' + mediaClass + '" style="position:relative; height:10rem; display:flex; align-items:center; justify-content:center; overflow:hidden;">'
+      + '<span class="article-badge absolute top-4 left-4 rounded-full px-3 py-1 text-[10px] font-semibold tracking-wide">' + escapeHtml(label) + "</span>"
+      + mediaHtml(post, false)
+      + "</div>"
+      + '<div class="p-6">'
+      + '<h3 class="text-base font-semibold mb-2" style="color:var(--navy);">' + escapeHtml(post.titulo) + "</h3>"
+      + '<p class="text-sm leading-relaxed mb-4" style="color:var(--ink-muted);">' + escapeHtml(post.resumen) + "</p>"
+      + '<div class="flex items-center justify-between text-xs" style="color:var(--ink-muted);"><span>' + formatFecha(post.fecha_publicacion) + " · " + (post.tiempo_lectura_min || 3) + ' min</span><a href="#" class="font-medium" style="color:var(--green-mid);">Leer →</a></div>'
+      + "</div></article>";
+  }
+
+  async function loadBlog() {
+    var featuredEl = document.getElementById("featured-article");
+    var gridEl = document.getElementById("articles-grid");
+    try {
+      var res = await sb.from("blog_posts").select("*").eq("activo", true).order("fecha_publicacion", { ascending: false });
+      if (res.error) throw res.error;
+      var data = res.data || [];
+      var featured = data.find(function(p) { return p.destacado; }) || data[0];
+      var rest = data.filter(function(p) { return !featured || p.id !== featured.id; });
+      if (featuredEl) {
+        featuredEl.innerHTML = featured ? renderFeatured(featured) : "";
+      }
+      if (gridEl) {
+        gridEl.innerHTML = rest.map(renderCard).join("");
+        if (window.__reinitBlogFilter) window.__reinitBlogFilter();
+      }
+    } catch (err) {
+      if (gridEl) gridEl.innerHTML = '<p class="col-span-full text-center text-sm" style="color:var(--ink-muted);">No se pudieron cargar los artículos.</p>';
+    }
+  }
+  loadBlog();
+})();
+</script>
 </body>
 </html>
