@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   tailwind.config = {
     theme: {
@@ -108,15 +109,15 @@
       <div class="text-xs font-semibold tracking-[0.2em] mb-3" style="color:var(--green-mid);">NUESTRA HISTORIA</div>
       <h2 class="text-3xl md:text-4xl font-normal tracking-tight mb-6" style="letter-spacing:-0.02em; color:var(--navy);">De una idea a miles de empaques que hacen la diferencia</h2>
 
-      <p class="text-sm md:text-base leading-relaxed mb-4" style="color:var(--ink-muted);">FoodPack J.L. nació hace más de 15 años en Bogotá, cuando su fundador Juan L. identificó una necesidad clara en el mercado de la comida rápida: los negocios necesitaban empaques de calidad, a buen precio y que no dañaran el medio ambiente.</p>
-      <p class="text-sm md:text-base leading-relaxed mb-4" style="color:var(--ink-muted);">Lo que empezó como un pequeño proyecto familiar en Fontibón se convirtió en una empresa sólida que hoy abastece a cientos de restaurantes, hamburgueserías y negocios de comida rápida en toda Colombia.</p>
-      <p class="text-sm md:text-base leading-relaxed mb-8" style="color:var(--ink-muted);">Cada lámina que fabricamos lleva el compromiso de Juan y su equipo: calidad que protege el alimento, el negocio del cliente y el planeta.</p>
+      <p id="historia-p1" class="text-sm md:text-base leading-relaxed mb-4" style="color:var(--ink-muted);">FoodPack J.L. nació hace más de 15 años en Bogotá, cuando su fundador Juan L. identificó una necesidad clara en el mercado de la comida rápida: los negocios necesitaban empaques de calidad, a buen precio y que no dañaran el medio ambiente.</p>
+      <p id="historia-p2" class="text-sm md:text-base leading-relaxed mb-4" style="color:var(--ink-muted);">Lo que empezó como un pequeño proyecto familiar en Fontibón se convirtió en una empresa sólida que hoy abastece a cientos de restaurantes, hamburgueserías y negocios de comida rápida en toda Colombia.</p>
+      <p id="historia-p3" class="text-sm md:text-base leading-relaxed mb-8" style="color:var(--ink-muted);">Cada lámina que fabricamos lleva el compromiso de Juan y su equipo: calidad que protege el alimento, el negocio del cliente y el planeta.</p>
 
       <div class="contact-card rounded-xl p-4 inline-flex items-center gap-3">
-        <div class="w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold shrink-0" style="background:linear-gradient(135deg,var(--green),var(--green-mid)); color:var(--green-dark);">JL</div>
+        <div id="founder-avatar" class="w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 overflow-hidden" style="background:linear-gradient(135deg,var(--green),var(--green-mid)); color:var(--green-dark);">JL</div>
         <div>
-          <div class="text-sm font-medium" style="color:var(--navy);">Juan L.</div>
-          <div class="text-xs" style="color:var(--ink-muted);">Fundador &amp; Director General — FoodPack J.L.</div>
+          <div id="founder-nombre" class="text-sm font-medium" style="color:var(--navy);">Juan L.</div>
+          <div id="founder-cargo" class="text-xs" style="color:var(--ink-muted);">Fundador &amp; Director General — FoodPack J.L.</div>
         </div>
       </div>
     </article>
@@ -272,5 +273,53 @@
 </script>
 <script src="main.js"></script>
 
+<script>
+(function() {
+  var sb = window.supabase.createClient("https://vfspninncrmvsbjzygnm.supabase.co", "sb_publishable_xfOz5c2O9YFezzUSZKbI3Q_nWT6EnLN");
+  var BUCKET = "imagenes";
+  function publicUrl(path) {
+    if (!path) return null;
+    var r = sb.storage.from(BUCKET).getPublicUrl(path);
+    return r.data.publicUrl;
+  }
+  async function loadFundador() {
+    try {
+      var res = await sb.from("contenido_visual").select("clave,valor").in("clave", ["nosotros_fundador","nosotros_fundador_nombre","nosotros_fundador_cargo","nosotros_historia_texto"]);
+      if (res.error) throw res.error;
+      var map = {};
+      (res.data || []).forEach(function(row) { map[row.clave] = row.valor; });
+      if (map.nosotros_fundador) {
+        var avatar = document.getElementById("founder-avatar");
+        if (avatar) {
+          var img = document.createElement("img");
+          img.src = publicUrl(map.nosotros_fundador);
+          img.className = "w-full h-full object-cover rounded-full";
+          avatar.textContent = "";
+          avatar.appendChild(img);
+        }
+      }
+      if (map.nosotros_fundador_nombre) {
+        var n = document.getElementById("founder-nombre");
+        if (n) n.textContent = map.nosotros_fundador_nombre;
+      }
+      if (map.nosotros_fundador_cargo) {
+        var c = document.getElementById("founder-cargo");
+        if (c) c.textContent = map.nosotros_fundador_cargo;
+      }
+      if (map.nosotros_historia_texto) {
+        var parrafos = map.nosotros_historia_texto.split("\n\n").filter(Boolean);
+        var ids = ["historia-p1", "historia-p2", "historia-p3"];
+        ids.forEach(function(id, i) {
+          var el = document.getElementById(id);
+          if (el && parrafos[i]) el.textContent = parrafos[i];
+        });
+      }
+    } catch (err) {
+      console.error("No se pudo cargar la informacion del fundador:", err);
+    }
+  }
+  loadFundador();
+})();
+</script>
 </body>
 </html>
