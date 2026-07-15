@@ -220,6 +220,7 @@
       var data = res.data || [];
       if (data.length === 0) { grid.innerHTML = '<p class="col-span-full text-center text-sm" style="color:var(--ink-muted);">Proximamente nuevos productos.</p>'; return; }
       grid.innerHTML = data.map(renderCard).join("");
+      grid.querySelectorAll(".reveal").forEach(function(el){ el.classList.add("visible"); });
     } catch (err) {
       grid.innerHTML = '<p class="col-span-full text-center text-sm" style="color:var(--ink-muted);">No se pudieron cargar los productos.</p>';
     }
