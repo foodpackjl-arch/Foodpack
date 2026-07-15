@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Admin - Imagenes</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+<header class="bg-gray-900 text-white px-6 py-4 flex justify-between items-center">
+<div class="flex items-center gap-6">
+<h1 class="text-lg font-semibold">Panel de Administracion</h1>
+<nav class="flex gap-4 text-sm text-gray-300">
+<a href="dashboard.html" class="hover:text-white">Dashboard</a>
+<a href="users.html" class="hover:text-white">Usuarios</a>
+<a href="products.html" class="hover:text-white">Productos</a>
+<a href="blog.html" class="hover:text-white">Blog</a>
+<a href="contenido-visual.html" class="text-white font-medium">Imagenes</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<span id="user-email" class="text-sm text-gray-300"></span>
+<button id="logout-btn" class="bg-gray-700 hover:bg-gray-600 text-sm px-3 py-1.5 rounded-lg">Cerrar sesion</button>
+</div>
+</header>
+
+<main class="p-8 max-w-5xl mx-auto space-y-6">
+<p id="list-msg" class="text-xs text-gray-500 hidden"></p>
+<div id="content-root" class="space-y-8"></div>
+</main>
+
+<script>
+const supabaseUrl = 'https://vfspninncrmvsbjzygnm.supabase.co';
+const supabaseKey = 'sb_publishable_xfOz5c2O9YFezzUSZKbI3Q_nWT6EnLN';
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+const BUCKET = 'imagenes';
+
+const PAGINA_LABELS = { global: 'Global', home: 'Pagina Principal', productos: 'Pagina de Productos', nosotros: 'Pagina Nosotros' };
+const SECCION_LABELS = {
+footer: 'Pie de pagina', header: 'Encabezado', hero: 'Seccion principal (hero)', historia: 'Historia',
+lo_que_nos_mueve: 'Lo que nos mueve', valores: 'Nuestros valores', catalogo: 'Catalogo de productos',
+como_funciona: 'Como funciona', por_que: 'Por que FoodPack J.L.'
+};
+
+async function init() {
+const { data } = await supabaseClient.auth.getSession();
+if (!data.session) {
+window.location.href = 'login.html';
+return;
+}
+document.getElementById('user-email').textContent = data.session.user.email;
+loadContent();
+}
+init();
+
+document.getElementById('logout-btn').addEventListener('click', async () => {
+await supabaseClient.auth.signOut();
+window.location.href = 'login.html';
+});
+
+function publicUrl(path) {
+if (!path) return null;
+const { data } = supabaseClient.storage.from(BUCKET).getPublicUrl(path);
+return data.publicUrl;
+}
+
+function optimizeImage(file, maxDim, quality) {
+return new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.onload = (e) => {
+const img = new Image();
+img.onload = () => {
+let w = img.width, h = img.height;
+if (w > maxDim || h > maxDim) {
+if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+else { w = Math.round(w * maxDim / h); h = maxDim; }
+}
+const canvas = document.createElement('canvas');
+canvas.width = w; canvas.height = h;
+canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+const type = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+canvas.toBlob((blob) => resolve({ blob, type }), type, quality);
+};
+img.onerror = reject;
+img.src = e.target.result;
+};
+reader.onerror = reject;
+reader.readAsDataURL(file);
+});
+}
+
+function flashSaved(el) {
+const flash = document.createElement('span');
+flash.textContent = 'Guardado';
+flash.className = 'text-xs text-green-600 ml-2';
+el.appendChild(flash);
+setTimeout(() => flash.remove(), 1800);
+}
+
+async function saveValor(clave, valor, btnRow) {
+const { error } = await supabaseClient.from('contenido_visual').update({ valor }).eq('clave', clave);
+if (error) {
+alert('No se pudo guardar: ' + error.message);
+} else if (btnRow) {
+flashSaved(btnRow);
+}
+}
+
+async function loadContent() {
+const listMsg = document.getElementById('list-msg');
+const root = document.getElementById('content-root');
+listMsg.textContent = 'Cargando...';
+listMsg.classList.remove('hidden');
+
+const { data, error } = await supabaseClient.from('contenido_visual').select('*').order('pagina').order('seccion').order('clave');
+if (error) {
+listMsg.textContent = 'Error al cargar contenido.';
+return;
+}
+listMsg.classList.add('hidden');
+root.innerHTML = '';
+
+const groups = {};
+data.forEach((row) => {
+groups[row.pagina] = groups[row.pagina] || {};
+groups[row.pagina][row.seccion] = groups[row.pagina][row.seccion] || [];
+groups[row.pagina][row.seccion].push(row);
+});
+
+Object.keys(groups).forEach((pagina) => {
+const pageSection = document.createElement('section');
+pageSection.className = 'space-y-4';
+const pageTitle = document.createElement('h2');
+pageTitle.className = 'text-xl font-semibold text-gray-800';
+pageTitle.textContent = PAGINA_LABELS[pagina] || pagina;
+pageSection.appendChild(pageTitle);
+
+Object.keys(groups[pagina]).forEach((seccion) => {
+const card = document.createElement('div');
+card.className = 'bg-white rounded-2xl shadow p-6';
+const secTitle = document.createElement('h3');
+secTitle.className = 'text-sm font-semibold text-gray-600 mb-4 uppercase tracking-wide';
+secTitle.textContent = SECCION_LABELS[seccion] || seccion;
+card.appendChild(secTitle);
+
+const rowsWrap = document.createElement('div');
+rowsWrap.className = 'space-y-5';
+
+groups[pagina][seccion].forEach((row) => {
+rowsWrap.appendChild(renderRow(row));
+});
+
+card.appendChild(rowsWrap);
+pageSection.appendChild(card);
+});
+
+root.appendChild(pageSection);
+});
+}
+
+function renderRow(row) {
+const wrap = document.createElement('div');
+wrap.className = 'flex flex-col sm:flex-row sm:items-start gap-3 pb-4 border-b last:border-b-0 last:pb-0';
+
+const label = document.createElement('div');
+label.className = 'text-sm text-gray-700 sm:w-64 shrink-0';
+label.textContent = row.etiqueta || row.clave;
+wrap.appendChild(label);
+
+const control = document.createElement('div');
+control.className = 'flex-1 flex flex-wrap items-center gap-2';
+
+if (row.tipo === 'imagen') {
+const thumb = document.createElement('div');
+thumb.className = 'w-20 h-20 rounded-lg bg-gray-50 border flex items-center justify-center overflow-hidden text-xs text-gray-400 shrink-0';
+if (row.valor) {
+const img = document.createElement('img');
+img.src = publicUrl(row.valor);
+img.className = 'w-full h-full object-cover';
+thumb.appendChild(img);
+} else {
+thumb.textContent = 'Sin imagen';
+}
+control.appendChild(thumb);
+
+const fileInput = document.createElement('input');
+fileInput.type = 'file';
+fileInput.accept = 'image/*';
+fileInput.className = 'text-xs';
+fileInput.addEventListener('change', async (e) => {
+const file = e.target.files[0];
+if (!file) return;
+const opt = await optimizeImage(file, 1600, 0.82);
+const ext = opt.type === 'image/png' ? 'png' : 'jpg';
+const path = row.clave + '.' + ext;
+const { error: upErr } = await supabaseClient.storage.from(BUCKET).upload(path, opt.blob, { upsert: true, contentType: opt.type });
+if (upErr) { alert('Error al subir imagen: ' + upErr.message); return; }
+await saveValor(row.clave, path, control);
+loadContent();
+});
+control.appendChild(fileInput);
+} else if (row.tipo === 'emoji') {
+const input = document.createElement('input');
+input.type = 'text';
+input.value = row.valor || '';
+input.className = 'border rounded-lg px-3 py-1.5 text-sm w-20 text-center';
+const saveBtn = document.createElement('button');
+saveBtn.textContent = 'Guardar';
+saveBtn.type = 'button';
+saveBtn.className = 'text-xs bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700';
+saveBtn.addEventListener('click', () => saveValor(row.clave, input.value.trim(), control));
+control.appendChild(input);
+control.appendChild(saveBtn);
+} else if (row.tipo === 'visible') {
+const checkbox = document.createElement('input');
+checkbox.type = 'checkbox';
+checkbox.className = 'w-4 h-4';
+checkbox.checked = row.valor === 'true';
+const statusLabel = document.createElement('span');
+statusLabel.className = 'text-sm text-gray-600';
+statusLabel.textContent = checkbox.checked ? 'Visible' : 'Oculto';
+checkbox.addEventListener('change', async () => {
+statusLabel.textContent = checkbox.checked ? 'Visible' : 'Oculto';
+await saveValor(row.clave, checkbox.checked ? 'true' : 'false', control);
+});
+control.appendChild(checkbox);
+control.appendChild(statusLabel);
+} else if (row.tipo === 'texto') {
+const textarea = document.createElement('textarea');
+textarea.value = row.valor || '';
+textarea.rows = row.clave.indexOf('historia') !== -1 ? 5 : 1;
+textarea.className = 'border rounded-lg px-3 py-1.5 text-sm w-full max-w-md';
+const saveBtn = document.createElement('button');
+saveBtn.textContent = 'Guardar';
+saveBtn.type = 'button';
+saveBtn.className = 'text-xs bg-gray-900 text-white px-3 py-1.5 rounded-lg hover:bg-gray-700 self-start';
+saveBtn.addEventListener('click', () => saveValor(row.clave, textarea.value.trim(), control));
+control.appendChild(textarea);
+control.appendChild(saveBtn);
+}
+
+wrap.appendChild(control);
+return wrap;
+}
+</script>
+</body>
+</html>
